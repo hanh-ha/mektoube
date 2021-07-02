@@ -11,10 +11,11 @@ const FromForm = ({navigation}) => {
   return (
     <View style={styles.wraper}>
       <SignUpForm
-        title="Où habitez-vous?"
+        title="Où habitez-vous ?"
         iconName="map-marker"
         subMit={onSubMit}
         navigation={navigation}
+        subTitle=""
       />
       <View style={styles.wrapperView}>
         <TouchableOpacity onPress={() => navigation.navigate('CountryForm')}>
@@ -50,9 +51,9 @@ const styles = StyleSheet.create({
     top: 0,
     textAlign: 'center',
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     width: '100%',
-    padding: 20,
+    padding: 19,
     backgroundColor: '#E71111',
     fontFamily: 'AvenirNextCondensed-Bold',
   },

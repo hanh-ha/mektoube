@@ -12,16 +12,21 @@ const ZipcodeFormCity = ({navigation}) => {
   const getCity = useSelector(
     (state: IApplicationState) => state.getZipCodeCity?.data,
   );
-  console.log('getCity', getCity);
   const [value, setValue]: any = React.useState();
   const dispatch = useDispatch();
+  const onChange = newValue => {
+    setValue(newValue);
+  };
   const onSubMit = () => {
     value
       ? (dispatch(City(value)), navigation.navigate('SignUpForm'))
-      : setErr('Le champ est vide');
+      : (setErr('Le champ est vide'),
+        setTimeout(function () {
+          setErr(null);
+        }, 2000));
   };
   const renderItem = ({item}) => {
-    return <RadioBox title={item.name} value={item.id} />;
+    return <RadioBox title={item.name} value={item.id} onChange={onChange} />;
   };
   return (
     <View style={styles.wraper}>
@@ -30,6 +35,7 @@ const ZipcodeFormCity = ({navigation}) => {
         iconName="folder-o"
         subMit={onSubMit}
         navigation={navigation}
+        subTitle=""
       />
       {err ? <Text style={styles.styleErr}>{err}</Text> : null}
       <View style={styles.wrapperRadio}>
@@ -57,10 +63,10 @@ const styles = StyleSheet.create({
     top: 0,
     textAlign: 'center',
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     width: '100%',
-    padding: 20,
-    backgroundColor: '#E71111',
+    padding: 19,
+    backgroundColor: '#ff2c2c',
     fontFamily: 'AvenirNextCondensed-Bold',
   },
   wrapperRadio: {

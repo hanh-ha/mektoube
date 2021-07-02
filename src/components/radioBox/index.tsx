@@ -1,13 +1,13 @@
 import {RadioButton} from 'react-native-paper';
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-const RadioBox = ({title, value}) => {
+const RadioBox = ({title, value, onChange}) => {
   return (
-    <View style={styles.wrapper}>
+    <TouchableOpacity style={styles.wrapper} onPress={() => onChange(value)}>
       <Text style={styles.text}>{title}</Text>
       <RadioButton value={value} color="white" uncheckedColor="white" />
-    </View>
+    </TouchableOpacity>
   );
 };
 export default RadioBox;
@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     alignItems: 'center',
     paddingVertical: 10,
-    marginBottom: 10,
   },
   text: {
     color: 'white',

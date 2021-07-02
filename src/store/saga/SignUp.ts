@@ -1,12 +1,20 @@
 import requests from '../requests';
 import {ENPOINTS} from '../endpoints';
 import {put, takeLatest} from 'redux-saga/effects';
-import {LOGIN, LOGIN_SUCCESS, LOGIN_FALSE} from '../type';
+import {LOGIN, LOGIN_SUCCESS, LOGIN_FALSE, LOG_OUT} from '../type';
 import {GET_COUNTRY, GET_COUNTRY_SUCCESS} from '../actions/getCountry';
 import {GET_REGION, GET_REGIOM_SUCCESS} from '../actions/getRegion';
 import {CITY_FORM, CITY_FORM_SUCCESS} from '../actions/getCity';
-import {POST_SIGN_UP, POST_SIGN_UP_SUCCESS} from '../actions/postSignUp';
-import {GET_USER, GET_USER_SUCCESS} from '../actions/getUser';
+import {
+  POST_SIGN_UP,
+  POST_SIGN_UP_SUCCESS,
+  POST_SIGN_UP_FALSE,
+} from '../actions/postSignUp';
+import {
+  GET_USER,
+  GET_USER_SUCCESS,
+  // GET_USER_PLACEHOLDER,
+} from '../actions/getUser';
 import {
   GEOLOCATIONCITY,
   GEOLOCATIONCITY_SUCCESS,
@@ -31,7 +39,6 @@ function* postLogin(action) {
 
       const token = response.data.CONTENT.token;
       const puk = response.data.CONTENT.puk;
-      console.log('tt', token, puk);
       yield AsyncStorage.multiSet(
         [
           ['AccessToken', token],
@@ -41,6 +48,7 @@ function* postLogin(action) {
           console.log('ERROR saveTokenToStore: ', err);
         },
       );
+      yield put({type: LOG_OUT, value: token});
       yield put({type: LOGIN_FALSE, value: false});
     }
   } catch (e) {
@@ -53,9 +61,7 @@ function* getCountry() {
     if (responseCountry) {
       yield put({type: GET_COUNTRY_SUCCESS, data: responseCountry});
     }
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
 }
 
 function* getRegion(action) {
@@ -66,9 +72,24 @@ function* getRegion(action) {
     if (responseRegion) {
       yield put({type: GET_REGIOM_SUCCESS, value: responseRegion});
     }
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
+}
+function* getGeolocationCity(action) {
+  try {
+    const responseGeolocationCity = yield requests.get('/atlas/location.json', {
+      params: {
+        latitude: action.latitude,
+        longitude: action.longitude,
+        unit: 'DEG',
+      },
+    });
+    if (responseGeolocationCity) {
+      yield put({
+        type: GEOLOCATIONCITY_SUCCESS,
+        value: responseGeolocationCity.data.CONTENT.cities,
+      });
+    }
+  } catch (e) {}
 }
 function* getZipCodeCity(action) {
   try {
@@ -96,32 +117,11 @@ function* getCity(action) {
     if (responseCity) {
       yield put({type: CITY_FORM_SUCCESS, value: responseCity});
     }
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
 }
-function* getGeolocationCity(action) {
-  try {
-    const getGeolocationCity = yield requests.get('/atlas/location.json', {
-      params: {
-        latitude: action.latitude,
-        longitude: action.longitude,
-        unit: 'DEG',
-      },
-    });
-    if (getGeolocationCity) {
-      yield put({
-        type: GEOLOCATIONCITY_SUCCESS,
-        value: getGeolocationCity.data.CONTENT.cities,
-      });
-    }
-  } catch (e) {
-    console.log(e);
-  }
-}
+
 function* postSignUp(action) {
   try {
-    console.log('action', action.value);
     const responseSignUp = yield requests.post(
       '/pool/.json?new_key_signup=true',
       action.value,
@@ -143,27 +143,38 @@ function* postSignUp(action) {
           console.log('ERROR saveTokenToStore: ', err);
         },
       );
-      const getToken = yield AsyncStorage.getItem('AccessToken');
-      const getPuk = yield AsyncStorage.getItem('AccessPuk');
-      console.log('gg', getToken, getPuk);
+      // const getToken = yield AsyncStorage.getItem('AccessToken');
+      // const getPuk = yield AsyncStorage.getItem('AccessPuk');
+      yield put({type: LOG_OUT, value: token});
+    } else {
+      yield put({type: POST_SIGN_UP_FALSE, value: false});
     }
   } catch (e) {
-    console.log(e);
+    yield put({type: POST_SIGN_UP_FALSE, value: false});
   }
 }
 
-function* getUser() {
+function* getUser(action) {
   const getToken = yield AsyncStorage.getItem('AccessToken');
   const getPuk = yield AsyncStorage.getItem('AccessPuk');
-  console.log('gg', getToken, getPuk);
-  const user = yield requests.get('/pool/.json?order=DEFAULT&size=40&start=0', {
-    headers: {
-      'x-asgard-puk': getPuk,
-      'x-asgard-token': getToken,
+  const user = yield requests.get(
+    `/pool/.json?order=DEFAULT&size=20&start=${action.value}`,
+    {
+      headers: {
+        'x-asgard-puk': getPuk,
+        'x-asgard-token': getToken,
+      },
     },
-  });
+  );
   if (user) {
-    yield put({type: GET_USER_SUCCESS, value: user.data.CONTENT.USERS});
+    yield put({
+      type: GET_USER_SUCCESS,
+      value: user.data.CONTENT.USERS,
+    });
+    // yield put({
+    //   type: GET_USER_PLACEHOLDER,
+    //   value: false,
+    // });
   }
 }
 function* signupWatcher() {

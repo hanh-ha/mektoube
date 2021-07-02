@@ -8,7 +8,6 @@ import {
 import React, {useState} from 'react';
 import {Dimensions} from 'react-native';
 import Image from 'react-native-scalable-image';
-import {Modal} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {useForm, Controller} from 'react-hook-form';
 import {TextInput} from 'react-native-paper';
@@ -18,24 +17,25 @@ import {useDispatch, useSelector} from 'react-redux';
 import {InputSignIn} from '../../components/InputSignIn';
 import {ActivityIndicator} from 'react-native-paper';
 import {IApplicationState} from '../../store/reducers/state';
+import Modal from 'react-native-modal';
 
 const Home = ({navigation}) => {
   const win = Dimensions.get('window');
   const [visible, setVisible] = useState(false);
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
   const {control, handleSubmit, errors} = useForm();
   const dispatch = useDispatch();
+  const [passWord, setpassword]: any = useState('');
+  const [email, setEmail]: any = useState('');
 
   const onSubmit = value => {
     dispatch(login(value.email, value.password));
   };
   const [securityPassword, setSecurityPassword] = useState(true);
-  const [eye, setEye] = useState('eye-off');
+  const [eye, setEye] = useState('eye');
   const hiddenPassword = () => {
-    eye === 'eye'
-      ? (setEye('eye-off'), setSecurityPassword(true))
-      : (setEye('eye'), setSecurityPassword(false));
+    eye === 'eye-off'
+      ? (setEye('eye'), setSecurityPassword(true))
+      : (setEye('eye-off'), setSecurityPassword(false));
   };
   const width = 0.7 * win.width;
   const loginFalse = useSelector(
@@ -44,8 +44,6 @@ const Home = ({navigation}) => {
   const loadingLogin = useSelector(
     (state: IApplicationState) => state?.signIn?.loading,
   );
-
-  console.log('loginFalse', loginFalse);
   return (
     <View style={style.container}>
       <ImageBackground
@@ -56,20 +54,12 @@ const Home = ({navigation}) => {
             source={require('../../../src/images/logo.png')}
             width={width}
           />
-          <Text
-            style={{
-              textAlign: 'center',
-              marginVertical: 10,
-              fontSize: 17,
-              color: '#f1f1f1',
-              fontFamily: 'AvenirNextCondensed-Bold',
-              width: width,
-            }}>
+          <Text style={style.TextTitle}>
             L'aplication numero 1 de la recontre Musulmane et Maghrebine
           </Text>
         </View>
         <View style={style.Bottom}>
-          <TouchableOpacity onPress={showModal}>
+          <TouchableOpacity onPress={() => setVisible(true)}>
             <Text style={style.textConnector}>se connecter</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -81,10 +71,24 @@ const Home = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </ImageBackground>
-      <Modal visible={visible} onDismiss={hideModal} style={style.modal}>
-        <TouchableOpacity onPress={hideModal}>
-          <Icon name="close" size={30} style={style.iconClose} />
-        </TouchableOpacity>
+      <Modal
+        style={style.modal}
+        isVisible={visible}
+        backdropOpacity={0}
+        coverScreen={false}
+        propagateSwipe={true}
+        useNativeDriver={true}
+        hasBackdrop={true}
+        scrollHorizontal={true}
+        swipeDirection="down">
+        <View style={{position: 'absolute', top: 16, right: 16}}>
+          {visible ? (
+            <TouchableOpacity onPress={() => setVisible(false)}>
+              <Icon name="close" size={30} style={style.iconClose} />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
         <View style={style.wrapperConnexion}>
           <Text style={style.textConnexion}>Connexion</Text>
           {errors.email || errors.password || loginFalse ? (
@@ -96,32 +100,47 @@ const Home = ({navigation}) => {
             <Controller
               as={InputSignIn}
               name="email"
-              label="Adresse mail"
+              label={
+                email
+                  ? 'Veuillez vous connecter avec votre email'
+                  : 'Adresse mail'
+              }
               error={!!errors.email}
               control={control}
               defaultValue=""
               rules={{required: true}}
+              placeholder="Address mail"
+              onChangeCallback={value => {
+                setEmail(value);
+              }}
             />
+
             <View style={style.wrapperController}>
               <Controller
                 as={InputSignIn}
                 name="password"
-                label="Mot de passe"
+                label="Votre mot de passe"
                 error={!!errors.password}
                 control={control}
                 defaultValue=""
                 rules={{required: true}}
                 secureTextEntry={securityPassword}
                 LinkInput={
-                  <TextInput.Icon
-                    name={eye}
-                    onPress={() => {
-                      hiddenPassword();
-                    }}
-                    color="#929699"
-                    style={style.textInPutIcon}
-                  />
+                  passWord ? (
+                    <TextInput.Icon
+                      name={eye}
+                      onPress={() => {
+                        hiddenPassword();
+                      }}
+                      color="#929699"
+                      style={style.textInPutIcon}
+                    />
+                  ) : null
                 }
+                placeholder="Votre mot de passe"
+                onChangeCallback={value => {
+                  setpassword(value);
+                }}
               />
               <TouchableOpacity style={style.wrapMot}>
                 <Text style={style.TextMot}>Mot de passe oublié ?</Text>
@@ -141,7 +160,7 @@ const Home = ({navigation}) => {
             <ActivityIndicator
               animating={true}
               color="white"
-              size={38}
+              size={40}
               style={style.loading}
             />
           ) : (
@@ -185,9 +204,6 @@ const style = StyleSheet.create({
   ImageBackground: {
     flex: 1,
     resizeMode: 'cover',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    position: 'relative',
   },
   textConnector: {
     fontSize: 14,
@@ -203,6 +219,7 @@ const style = StyleSheet.create({
     fontSize: 16,
     color: '#f1f1f1',
     fontFamily: 'AvenirNextCondensed-Bold',
+    paddingHorizontal: 20,
   },
   Bottom: {
     flexDirection: 'row',
@@ -217,13 +234,18 @@ const style = StyleSheet.create({
   modal: {
     flex: 1,
     justifyContent: 'flex-end',
+    width: '100%',
+    margin: 0,
+    position: 'relative',
+    height: '100%',
   },
   iconClose: {
     color: '#f1f1f1',
-    alignSelf: 'flex-end',
-    flex: 0,
-    marginRight: 20,
-    marginBottom: 150,
+    // position: 'absolute',
+    // top: 16,
+    // right: 16,
+    // flex: 1,
+    // zIndex: 100,
   },
   textInput: {
     marginBottom: 10,
@@ -265,15 +287,15 @@ const style = StyleSheet.create({
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
     // paddingVertical: 20,
-    paddingTop: 32,
-    paddingBottom: 66,
+    paddingTop: 28,
+    paddingBottom: 42,
     paddingHorizontal: 32,
   },
   textConnexion: {
     color: '#000000',
     fontSize: 24,
     fontFamily: 'AvenirNextCondensed-DemiBold',
-    marginBottom: 24,
+    marginBottom: 15,
   },
   textincorrect: {
     backgroundColor: '#ffe8ea',
@@ -303,7 +325,7 @@ const style = StyleSheet.create({
     fontFamily: 'AvenirNextCondensed-DemiBold',
   },
   wrappercontacter: {
-    marginBottom: 24,
+    marginBottom: 20,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -338,10 +360,10 @@ const style = StyleSheet.create({
   textMeconnecter: {
     fontFamily: 'AvenirNextCondensed-DemiBold',
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 17,
   },
   wraperVous: {
-    marginTop: 35,
+    marginTop: 25,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',

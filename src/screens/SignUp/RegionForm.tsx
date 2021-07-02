@@ -15,10 +15,16 @@ const RegionForm = ({navigation}) => {
   const countryState = useSelector(
     (state: IApplicationState) => state.signUp?.country,
   );
+  const onChange = newValue => {
+    setValue(newValue);
+  };
   const onSubMit = () => {
     value
       ? (dispatch(Region(value)), navigation.navigate('CityForm'))
-      : setErr(<Text style={styles.styleErr}>Le champ est vide</Text>);
+      : (setErr(<Text style={styles.styleErr}>Le champ est vide</Text>),
+        setTimeout(function () {
+          setErr(null);
+        }, 2000));
   };
   useEffect(() => {
     dispatch(getRegion(countryState));
@@ -27,7 +33,7 @@ const RegionForm = ({navigation}) => {
     (state: IApplicationState) => state.Region?.data?.data?.CONTENT?.regions,
   );
   const renderItem = ({item}) => {
-    return <RadioBox title={item.name} value={item.id} />;
+    return <RadioBox title={item.name} value={item.id} onChange={onChange} />;
   };
   return (
     <View style={styles.wraper}>
@@ -36,6 +42,7 @@ const RegionForm = ({navigation}) => {
         iconName="map"
         subMit={onSubMit}
         navigation={navigation}
+        subTitle=""
       />
       {err}
       <View style={styles.wrapperRadio}>
@@ -64,10 +71,10 @@ const styles = StyleSheet.create({
     top: 0,
     textAlign: 'center',
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     width: '100%',
-    padding: 20,
-    backgroundColor: '#E71111',
+    padding: 19,
+    backgroundColor: '#ff2c2c',
     fontFamily: 'AvenirNextCondensed-Bold',
   },
   wrapperRadio: {
@@ -76,6 +83,6 @@ const styles = StyleSheet.create({
     width: '100%',
     top: 200,
     paddingHorizontal: 30,
-    height: 320,
+    bottom: 100,
   },
 });

@@ -6,12 +6,14 @@ interface IProps {
   error?: boolean;
   label?: string;
   value?: string;
-  onChange?: () => void;
+  onChange?: (x?: string) => void;
   onBlur?: () => void;
   isWhite?: boolean;
   autocomplete?: boolean;
   secureTextEntry?: boolean;
   LinkInput?: any;
+  onChangeCallback?: (val?: string) => void;
+  textInputReference?: any;
 }
 export function InputText(props: IProps) {
   const {
@@ -22,18 +24,24 @@ export function InputText(props: IProps) {
     onBlur = () => {},
     secureTextEntry = false,
     LinkInput = {},
+    onChangeCallback,
+    textInputReference,
   } = props;
+
   return (
     <TextInput
       label={label}
       error={error}
       value={value}
-      onChangeText={onChange}
+      onChangeText={val => {
+        onChange(val);
+        onChangeCallback?.(val);
+      }}
       onBlur={onBlur}
       style={styles.textInput}
-      outlineColor="none"
+      // outlineColor="none"
       selectionColor="#ffaff8"
-      underlineColor="ffd4f8"
+      underlineColor="white"
       theme={{
         colors: {
           placeholder: '#ffaff8',
@@ -43,12 +51,13 @@ export function InputText(props: IProps) {
         },
         fonts: {
           regular: {
-            fontFamily: 'AvenirNextCondensed-Medium',
+            fontFamily: 'AvenirNextCondensed',
           },
         },
       }}
       secureTextEntry={secureTextEntry}
       right={LinkInput}
+      ref={textInputReference}
     />
   );
 }
@@ -58,5 +67,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     // borderBottomColor: '#ffd4f8',
     // borderBottomWidth: 1,
+    fontWeight: '600',
   },
 });

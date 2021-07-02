@@ -1,4 +1,8 @@
-import {POST_SIGN_UP, POST_SIGN_UP_SUCCESS} from '../actions/postSignUp';
+import {
+  POST_SIGN_UP,
+  POST_SIGN_UP_SUCCESS,
+  POST_SIGN_UP_FALSE,
+} from '../actions/postSignUp';
 import {AnyAction, Reducer} from 'redux';
 
 const innitState = {
@@ -22,6 +26,12 @@ export const postSignUpReducer: Reducer = (
         token: action.token,
         puk: action.puk,
         loading: false,
+      };
+    }
+    case POST_SIGN_UP_FALSE: {
+      return {
+        ...state,
+        loading: action.value,
       };
     }
     default:

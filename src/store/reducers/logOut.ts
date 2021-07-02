@@ -2,7 +2,7 @@ import {LOG_OUT} from '../type';
 import {AnyAction, Reducer} from 'redux';
 
 const initState = {
-  activeLogout: false,
+  activeLogout: true,
 };
 export const logOutReducer: Reducer = (
   state = initState,

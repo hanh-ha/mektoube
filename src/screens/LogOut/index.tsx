@@ -10,7 +10,7 @@ const LogOut = ({}) => {
   const clearAppData = async () => {
     try {
       await AsyncStorage.multiRemove(['AccessToken', 'AccessPuk']);
-      dispatch(logOut(true));
+      dispatch(logOut(false));
       //   navigation.navigate('Home');
     } catch (error) {
       console.error('Error clearing app data.');

@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import SignUpForm from '../../components/SignUpForm';
-import {View, FlatList, StyleSheet} from 'react-native';
+import {View, FlatList, StyleSheet, Text} from 'react-native';
 import RadioBox from '../../components/radioBox';
 import {RadioButton} from 'react-native-paper';
 import {useSelector, useDispatch} from 'react-redux';
@@ -10,13 +10,23 @@ import {IApplicationState} from '../../store/reducers/state';
 
 const CountryForm = ({navigation}) => {
   const [value, setValue]: any = React.useState();
-  // const [err, setErr]: any = useState();
+  const [err, setErr]: any = useState();
 
   const dispatch = useDispatch();
+  const onChange = newValue => {
+    setValue(newValue);
+  };
   const onSubMit = () => {
-    value.zipFormat && value.zipRegex
-      ? (dispatch(Country(value.id)), navigation.navigate('ZipcodeForm'))
-      : (dispatch(Country(value.id)), navigation.navigate('RegionForm'));
+    if (value) {
+      value.zipFormat && value.zipRegex
+        ? (dispatch(Country(value.id)), navigation.navigate('ZipcodeForm'))
+        : (dispatch(Country(value.id)), navigation.navigate('RegionForm'));
+    } else {
+      setErr(<Text style={styles.styleErr}>Le champ est vide</Text>);
+      setTimeout(function () {
+        setErr(null);
+      }, 2000);
+    }
   };
   useEffect(() => {
     dispatch(getCountry());
@@ -25,26 +35,31 @@ const CountryForm = ({navigation}) => {
     (state: IApplicationState) =>
       state.Country.data.data?.CONTENT?.ALL?.countries,
   );
-  const renderItem = ({item}) => <RadioBox title={item.name} value={item} />;
+  const renderItem = ({item}) => (
+    <RadioBox title={item.name} value={item} onChange={onChange} />
+  );
   return (
     <View style={styles.wraper}>
       <SignUpForm
-        title="Quel est votre pays"
+        title="Quel est votre pays ?"
         iconName="map"
         subMit={onSubMit}
         navigation={navigation}
+        subTitle="Un seul choix possible"
       />
-      {/* {err} */}
-      <View style={styles.wrapperRadio}>
-        <RadioButton.Group
-          onValueChange={newValue => setValue(newValue)}
-          value={value}>
-          <FlatList
-            data={countryState}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-          />
-        </RadioButton.Group>
+      {err}
+      <View style={styles.wrapperBody}>
+        <View style={styles.wrapperRadio}>
+          <RadioButton.Group
+            onValueChange={newValue => setValue(newValue)}
+            value={value}>
+            <FlatList
+              data={countryState}
+              renderItem={renderItem}
+              keyExtractor={item => item.id}
+            />
+          </RadioButton.Group>
+        </View>
       </View>
     </View>
   );
@@ -53,25 +68,28 @@ const CountryForm = ({navigation}) => {
 export default CountryForm;
 const styles = StyleSheet.create({
   wraper: {
-    height: '100%',
-    width: '100%',
+    // height: '100%',
+    // width: '100%',
+    flex: 1,
   },
   styleErr: {
     position: 'absolute',
     top: 0,
     textAlign: 'center',
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     width: '100%',
-    padding: 20,
-    backgroundColor: '#E71111',
+    padding: 19,
+    backgroundColor: '#ff2c2c',
+  },
+  wrapperBody: {
+    position: 'absolute',
+    bottom: 100,
+    width: '100%',
+    paddingHorizontal: 30,
+    top: 200,
   },
   wrapperRadio: {
-    position: 'absolute',
-    flex: 1,
-    width: '100%',
-    top: 200,
-    paddingHorizontal: 30,
-    height: 320,
+    height: '100%',
   },
 });

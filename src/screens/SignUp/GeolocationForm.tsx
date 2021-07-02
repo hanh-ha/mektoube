@@ -16,7 +16,6 @@ interface ILocation {
 const GeolocationForm = ({navigation}) => {
   const [value, setValue]: any = React.useState();
   const [err, setErr]: any = useState();
-  Geolocation.getCurrentPosition(info => console.log(info));
   const [location, setLocation] = useState<ILocation>(undefined);
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -38,16 +37,23 @@ const GeolocationForm = ({navigation}) => {
     dispatch(getGeolocationCity(location?.latitude, location?.longitude));
   }, [location, dispatch]);
   const getCity = useSelector(
-    (state: IApplicationState) => state.getGeolocationCity.data,
+    (state: IApplicationState) => state.getGeolocationCity,
   );
-  const renderItem = ({item}) => <RadioBox title={item.name} value={item.id} />;
+  const onChange = newValue => {
+    setValue(newValue);
+  };
   const onSubMit = () => {
     value
       ? (dispatch(City(value)), navigation.navigate('SignUpForm'))
-      : setErr('Le champ est vide');
+      : (setErr('Le champ est vide'),
+        setTimeout(function () {
+          setErr(null);
+        }, 2000));
   };
-  const getstate = useSelector((state: IApplicationState) => state.signUp);
-  console.log('getstate', getstate);
+
+  const renderItem = ({item}) => (
+    <RadioBox title={item.name} value={item.id} onChange={onChange} />
+  );
 
   return (
     <View style={styles.wraper}>
@@ -56,6 +62,7 @@ const GeolocationForm = ({navigation}) => {
         iconName="folder-o"
         subMit={onSubMit}
         navigation={navigation}
+        subTitle=""
       />
       {err ? <Text style={styles.styleErr}>{err}</Text> : null}
       <View style={styles.wrapperRadio}>
@@ -84,10 +91,10 @@ const styles = StyleSheet.create({
     top: 0,
     textAlign: 'center',
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     width: '100%',
-    padding: 20,
-    backgroundColor: '#E71111',
+    padding: 19,
+    backgroundColor: '#ff2c2c',
     fontFamily: 'AvenirNextCondensed-Bold',
   },
   wrapperRadio: {
@@ -96,6 +103,6 @@ const styles = StyleSheet.create({
     width: '100%',
     top: 200,
     paddingHorizontal: 30,
-    height: 320,
+    bottom: 100,
   },
 });

@@ -6,116 +6,347 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  SafeAreaView,
+  RefreshControl,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {getUser} from '../../store/actions/getUser';
+import {getUser, getUserPlaceholder} from '../../store/actions/getUser';
 import {useDispatch, useSelector} from 'react-redux';
 import IconMap from 'react-native-vector-icons/FontAwesome';
+import {IApplicationState} from '../../store/reducers/state';
+import {Placeholder, PlaceholderLine} from 'rn-placeholder';
+import IconReload from 'react-native-vector-icons/AntDesign';
+import Images from 'react-native-remote-svg';
 
 const Discovery = () => {
+  const [page, setPage]: any = useState(1);
+  const [listUser, setListUser] = useState([]);
+  const [isScroll, setIsScroll] = useState(false);
+  const handleLoadMore = () => {
+    setPage(page + 1);
+  };
   const dispatch = useDispatch();
+
   useEffect(() => {
-    dispatch(getUser());
-  }, [dispatch]);
-  const User = useSelector(state => state.getUsers.data);
+    dispatch(getUserPlaceholder(true));
+    dispatch(getUser((page - 1) * 20));
+  }, [dispatch, page]);
+
+  const getUserSelector = useSelector(
+    (state: IApplicationState) => state.getUsers.data,
+  );
+  console.log(getUserSelector);
+  const getIsDataFetched = useSelector(
+    (state: IApplicationState) => state.getUsers.isDataFetched,
+  );
+  useEffect(() => {
+    const getUserList = () => {
+      try {
+        const User: [] = getUserSelector;
+        setListUser(prev => [...prev, ...User]);
+        dispatch(getUserPlaceholder(false));
+      } catch (err) {}
+    };
+    getUserList();
+  }, [dispatch, getUserSelector]);
+
   const getOnlineStatusColor = (status: number) => {
-    console.log('dsdsd', status);
-    if (status === 1) {
-      return 'green';
-    } else if (status == 0) {
+    if (Number(status) === 1) {
+      return '#24CF5E';
+    } else if (Number(status) === 0) {
       return '#ffc142';
     }
   };
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefreshs = () => {
+    setRefreshing(true);
+    const isRefresh = async () => {
+      try {
+        setListUser([]);
+        await dispatch(getUserPlaceholder(true));
+        dispatch(getUser((page - 1) * 20));
+      } catch (e) {}
+    };
+    isRefresh();
+    setRefreshing(false);
+  };
+
+  const handleScroll = e => {
+    const scrollTop = e.nativeEvent.contentOffset.y;
+    if (scrollTop > 100) {
+      setIsScroll(true);
+    } else {
+      setIsScroll(false);
+    }
+  };
+  const mySVGImage =
+    '<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><style>.cls-1{fill:none;}.cls-2{fill:#4baff0;}.cls-3{fill:#fff;}.cls-4{fill:#dadada;}.cls-5{fill:#706f6f;}</style></defs><title>homme avatar 01</title><path class="cls-1" d="M-.76,128c0,43,22.17,81,56,103.64C66.12,195.35,98.57,169,136.92,169c34.46,0,64.15,21.26,77.73,51.9,25.87-23,42.11-56.1,42.11-92.93"/><path class="cls-1" d="M256.76,128C256.76,58.61,199.11,2.36,128,2.36S-.76,58.61-.76,128"/><path class="cls-2" d="M136.92,169c-38.35,0-70.8,26.32-81.71,62.61a131.25,131.25,0,0,0,159.44-10.71C201.07,190.29,171.38,169,136.92,169Z"/><rect class="cls-3" x="116.31" y="154.34" width="31.39" height="29.37"/><ellipse class="cls-3" cx="131.36" cy="108.03" rx="41.63" ry="56.28"/><path class="cls-2" d="M147.72,170.64s-12.22,9.61-16.45,11.15-3.59,10.76-3.59,10.76l27.71,2.07,4.3-4.27Z"/><path class="cls-2" d="M116.28,171.54s11.47,10.5,15.58,12.34,2.78,11,2.78,11H106.85l-4-4.57Z"/><path class="cls-2" d="M129.07,182.18a5.46,5.46,0,0,0,2.87,0,1.49,1.49,0,0,1,1.7.47l-.19,1.64-2.57,1.24-1.62-.52Z"/><path class="cls-4" d="M119,136.08c0,5.1,5.81,9.23,13,9.23s13-4.13,13-9.23Z"/><path class="cls-5" d="M172.35,104.29c21.72-74.65-99.47-82.77-82.78,1C93.87,44.69,169.39,43.91,172.35,104.29Z"/><ellipse class="cls-5" cx="121.34" cy="69.82" rx="32.57" ry="13.16" transform="translate(-16.31 44.3) rotate(-19.42)"/></svg>';
+  const getMarginRight = index => {
+    if (index % 2 === 0) {
+      return '3%';
+    } else {
+      return '5%';
+    }
+  };
+  const getMarginLeft = index => {
+    if (index % 2 === 0) {
+      return '5%';
+    } else {
+      return '3%';
+    }
+  };
+
   const renderItem = ({item, index}) => {
     return (
-      <View key={index} style={styles.wrapperUser}>
+      <View
+        key={item.uuid}
+        style={{
+          width: '42%',
+          marginRight: getMarginRight(index),
+          marginLeft: getMarginLeft(index),
+          padding: 12,
+          marginBottom: 24,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'white',
+          borderRadius: 10,
+          elevation: 5,
+          shadowColor: '#000000',
+          shadowOffset: {width: 0, height: 1},
+          shadowOpacity: 0.5,
+          shadowRadius: 10,
+        }}>
         <View style={styles.widthImage}>
-          <TouchableOpacity style={styles.thumbnail}>
-            <Image
-              source={{
-                uri: `${item.thumbnail}`,
-              }}
-              style={styles.imageUser}
-            />
-            <View
-              style={{
-                width: 20,
-                height: 20,
-                borderRadius: 10,
-                position: 'absolute',
-                right: 0,
-                bottom: 0,
-                borderWidth: 3,
-                borderColor: '#FFFFFF',
-                backgroundColor: getOnlineStatusColor(item.online),
-              }}
-            />
-          </TouchableOpacity>
+          <View style={styles.thumbnail}>
+            <TouchableOpacity>
+              {item.thumbnail === null ? (
+                <Images
+                  source={{
+                    uri: 'data:image/svg+xml;utf8,' + mySVGImage,
+                  }}
+                  style={styles.imageUser}
+                />
+              ) : (
+                <Image
+                  source={{
+                    uri: `${item.thumbnail}`,
+                  }}
+                  style={styles.imageUser}
+                />
+              )}
+            </TouchableOpacity>
+            {Number(item.online) === 0 || Number(item.online) === 1 ? (
+              <View
+                style={{
+                  width: 20,
+                  zIndex: 30,
+                  height: 20,
+                  borderRadius: 10,
+                  position: 'absolute',
+                  right: -4,
+                  bottom: -3,
+                  borderWidth: 3,
+                  borderColor: '#FFFFFF',
+                  backgroundColor: getOnlineStatusColor(item.online),
+                }}
+              />
+            ) : null}
+          </View>
           <Text style={styles.name}>{item.name} </Text>
           <View style={styles.details}>
             <Text style={styles.age}>{item.age} ans</Text>
-            <Text style={styles.itemDatails}>|</Text>
-            <View style={styles.address}>
-              <IconMap name="map-marker" size={15} style={styles.iconMap} />
-              <Text style={styles.city}>{item.city}</Text>
-            </View>
+            {item.city === '-' ? null : (
+              <Text style={styles.itemDatails}>|</Text>
+            )}
+            {item.city === '-' ? null : (
+              <View style={styles.address}>
+                <IconMap name="map-marker" size={15} style={styles.iconMap} />
+                <Text style={styles.city}>{item.city}</Text>
+              </View>
+            )}
           </View>
         </View>
       </View>
     );
   };
   return (
-    <View style={styles.wrapper}>
-      <View>
-        <ImageBackground
-          source={{
-            uri: 'https://responsive-staging.ltservices2.ovh/images/temp/discover-banner-male.jpg',
-          }}
-          style={styles.ImageBackground}>
-          <View style={styles.titleWrap}>
-            <Text style={styles.title}>Rencontres</Text>
-            <Text style={styles.textTitle}>
-              Découvrez les profils et croisez vos destins !
-            </Text>
-          </View>
-        </ImageBackground>
-        <View style={styles.main}>
-          <View style={styles.filterWrap}>
-            <View>
-              <Text style={styles.titleOption}>Votre Recherche</Text>
-              <Text style={styles.titleSmail}>Autour de moi</Text>
-            </View>
-            <View>
-              <TouchableOpacity style={styles.option}>
-                <View style={styles.numberOption}>
-                  <Text style={styles.numberOptionText}>0</Text>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.wrapper}>
+        <View>
+          <View style={styles.main}>
+            <View style={styles.userList}>
+              {isScroll ? (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    height: 50,
+                    width: '100%',
+                    backgroundColor: '#fff',
+                    shadowColor: '#000',
+                    shadowOffset: {width: 1, height: 1},
+                    shadowOpacity: 0.4,
+                    shadowRadius: 3,
+                    elevation: 5,
+                    justifyContent: 'center',
+                    paddingHorizontal: 20,
+                    zIndex: 90,
+                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                    }}>
+                    <TouchableOpacity
+                      onPress={onRefreshs}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}>
+                      <IconReload size={20} name="reload1" />
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontFamily: 'AvenirNextCondensed-DemiBold',
+                          marginLeft: 10,
+                        }}>
+                        Reset
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <View style={styles.optionItem}>
-                  <Icon name="options" style={styles.iconOption} size={20} />
-                  <Text style={styles.textOption}>CRITERES</Text>
-                </View>
-              </TouchableOpacity>
+              ) : null}
+              <FlatList
+                keyExtractor={(item): any => item.uuid}
+                horizontal={false}
+                numColumns={2}
+                data={listUser}
+                showsVerticalScrollIndicator={false}
+                onEndReached={handleLoadMore}
+                showsHorizontalScrollIndicator={false}
+                renderItem={renderItem}
+                ListHeaderComponent={() => {
+                  return (
+                    <View>
+                      <ImageBackground
+                        source={{
+                          uri: 'https://responsive-staging.ltservices2.ovh/images/temp/discover-banner-male.jpg',
+                        }}
+                        style={styles.ImageBackground}>
+                        <View style={styles.titleWrap}>
+                          <Text style={styles.title}>Rencontres</Text>
+                          <Text style={styles.textTitle}>
+                            Découvrez les profils et croisez vos destins !
+                          </Text>
+                        </View>
+                      </ImageBackground>
+                      <View style={styles.filterWrap}>
+                        <View>
+                          <Text style={styles.titleOption}>
+                            Votre Recherche
+                          </Text>
+                          <Text style={styles.titleSmail}>Autour de moi</Text>
+                        </View>
+                        <View>
+                          <TouchableOpacity style={styles.option}>
+                            <View style={styles.numberOption}>
+                              <Text style={styles.numberOptionText}>0</Text>
+                            </View>
+                            <View style={styles.optionItem}>
+                              <Icon
+                                name="options"
+                                style={styles.iconOption}
+                                size={20}
+                              />
+                              <Text style={styles.textOption}>CRITERES</Text>
+                            </View>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                      <View style={styles.borderGray} />
+                    </View>
+                  );
+                }}
+                ListFooterComponent={() => {
+                  if (getIsDataFetched) {
+                    return (
+                      <Placeholder
+                        style={{
+                          marginBottom: 20,
+                          marginTop: 10,
+                          paddingHorizontal: 20,
+                        }}>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            marginBottom: 20,
+                          }}>
+                          <PlaceholderLine
+                            style={{width: 155, height: 150, borderRadius: 10}}
+                          />
+                          <PlaceholderLine
+                            style={{width: 155, height: 150, borderRadius: 10}}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            marginBottom: 20,
+                          }}>
+                          <PlaceholderLine
+                            style={{width: 155, height: 150, borderRadius: 10}}
+                          />
+                          <PlaceholderLine
+                            style={{width: 155, height: 150, borderRadius: 10}}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            marginBottom: 20,
+                          }}>
+                          <PlaceholderLine
+                            style={{width: 155, height: 150, borderRadius: 10}}
+                          />
+                          <PlaceholderLine
+                            style={{width: 155, height: 150, borderRadius: 10}}
+                          />
+                        </View>
+                      </Placeholder>
+                    );
+                  } else {
+                    return null;
+                  }
+                }}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefreshs}
+                  />
+                }
+                onScroll={e => handleScroll(e)}
+              />
             </View>
-          </View>
-          <View style={styles.userList}>
-            <FlatList
-              keyExtractor={(item): any => item.uuid}
-              horizontal={false}
-              numColumns={2}
-              data={User}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              renderItem={renderItem}
-            />
           </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 export default Discovery;
 const styles = StyleSheet.create({
+  borderGray: {
+    borderBottomColor: '#DCDCDC',
+    borderBottomWidth: 1,
+    width: 42,
+    marginBottom: 25,
+  },
   title: {
     fontFamily: 'AvenirNextCondensed-DemiBold',
     fontSize: 42,
@@ -123,7 +354,7 @@ const styles = StyleSheet.create({
   },
   ImageBackground: {
     width: '100%',
-    height: 245,
+    height: 200,
     justifyContent: 'center',
   },
   textTitle: {
@@ -132,7 +363,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   titleWrap: {
-    marginLeft: 14,
+    marginLeft: 20,
   },
   option: {
     backgroundColor: '#24CF5E',
@@ -169,11 +400,13 @@ const styles = StyleSheet.create({
   filterWrap: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 30,
+    marginBottom: 15,
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   main: {
-    paddingHorizontal: 24,
-    marginTop: 20,
+    // paddingHorizontal: 24,
+    // marginTop: 20,
     backgroundColor: '#FFFFFF',
   },
   wrapper: {
@@ -195,8 +428,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   imageUser: {
-    width: 128,
-    height: 128,
+    width: 132,
+    height: 132,
     borderRadius: 10,
     // alignSelf: 'center',
   },
@@ -212,6 +445,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     alignSelf: 'flex-start',
     width: 128,
+    fontWeight: '700',
   },
   age: {
     fontFamily: 'AvenirNextCondensed-DemiBold',
@@ -239,19 +473,11 @@ const styles = StyleSheet.create({
     fontFamily: 'AvenirNextCondensed-DemiBold',
   },
   userList: {
-    marginTop: 30,
+    // marginTop: 30,
     flexDirection: 'row',
     width: '100%',
   },
-  wrapperUser: {
-    paddingBottom: 16,
-    marginBottom: 10,
-    width: '48%',
-    margin: '2%',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  wrapperUser: {},
   status: {
     width: 20,
     height: 20,
@@ -263,7 +489,8 @@ const styles = StyleSheet.create({
     borderColor: '#FFFFFF',
   },
   widthImage: {
-    width: 128,
+    backgroundColor: '#fff',
+    borderRadius: 10,
   },
   numberOptionText: {
     color: '#24CF5E',

@@ -36,7 +36,6 @@ const BirthdayForm = ({navigation}) => {
     }
   };
   const onSubMit = () => {
-    console.log(`${year}- ${month} -${day}`);
     if (
       day > 0 &&
       month > 0 &&
@@ -48,15 +47,19 @@ const BirthdayForm = ({navigation}) => {
       navigation.navigate('OriginForm');
     } else {
       setErr(<Text style={style.styleErr}>Le champ est vide</Text>);
+      setTimeout(function () {
+        setErr(null);
+      }, 2000);
     }
   };
   return (
     <View>
       <SignUpForm
-        title="Quelle est votre date de naissance "
+        title="Quelle est votre date de naissance ?"
         iconName="birthday-cake"
         subMit={onSubMit}
         navigation={navigation}
+        subTitle=""
       />
       {err}
       <View style={style.wrapperTextInput}>
@@ -95,7 +98,7 @@ const style = StyleSheet.create({
     fontSize: 18,
     color: '#fdceed',
     borderBottomColor: 'white',
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     marginRight: 10,
     marginLeft: 10,
     fontFamily: 'AvenirNextCondensed',
@@ -105,10 +108,10 @@ const style = StyleSheet.create({
     top: 0,
     textAlign: 'center',
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     width: '100%',
-    padding: 20,
-    backgroundColor: '#E71111',
+    padding: 19,
+    backgroundColor: '#ff2c2c',
   },
   wrapperTextInput: {
     position: 'absolute',

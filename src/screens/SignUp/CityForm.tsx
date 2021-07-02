@@ -20,11 +20,19 @@ const CityForm = ({navigation}) => {
   const getDataCity = useSelector(
     (state: IApplicationState) => state.City.data.data?.CONTENT.ALL.cities,
   );
-  const renderItem = ({item}) => <RadioBox title={item.name} value={item.id} />;
+  const onChange = newValue => {
+    setValue(newValue);
+  };
+  const renderItem = ({item}) => (
+    <RadioBox title={item.name} value={item.id} onChange={onChange} />
+  );
   const onSubMit = () => {
     value
       ? (dispatch(City(value)), navigation.navigate('SignUpForm'))
-      : setErr(<Text style={styles.styleErr}>Le champ est vide</Text>);
+      : (setErr(<Text style={styles.styleErr}>Le champ est vide</Text>),
+        setTimeout(function () {
+          setErr(null);
+        }, 2000));
   };
   return (
     <View style={styles.wraper}>
@@ -33,6 +41,7 @@ const CityForm = ({navigation}) => {
         iconName="folder-o"
         subMit={onSubMit}
         navigation={navigation}
+        subTitle=""
       />
       {err}
       <View style={styles.wrapperRadio}>
@@ -61,10 +70,10 @@ const styles = StyleSheet.create({
     top: 0,
     textAlign: 'center',
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     width: '100%',
-    padding: 20,
-    backgroundColor: '#E71111',
+    padding: 19,
+    backgroundColor: '#ff2c2c',
   },
   wrapperRadio: {
     position: 'absolute',
@@ -72,6 +81,6 @@ const styles = StyleSheet.create({
     width: '100%',
     top: 200,
     paddingHorizontal: 30,
-    height: 320,
+    bottom: 100,
   },
 });

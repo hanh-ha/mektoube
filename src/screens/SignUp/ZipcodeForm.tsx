@@ -19,7 +19,10 @@ const EntityForm = ({navigation}) => {
     dispatch(getZipCodeCity(getCountry, value));
     chekcZipCode
       ? navigation.navigate('ZipcodeFormCity')
-      : setErr('Le champ est vide');
+      : (setErr('Le champ est vide'),
+        setTimeout(function () {
+          setErr(null);
+        }, 2000));
   };
 
   return (
@@ -29,6 +32,7 @@ const EntityForm = ({navigation}) => {
         iconName="folder-o"
         subMit={onSubMit}
         navigation={navigation}
+        subTitle=""
       />
       {err ? <Text style={styles.err}>{err}</Text> : null}
       <View style={styles.wrapInput}>
@@ -60,10 +64,10 @@ const styles = StyleSheet.create({
     top: 0,
     textAlign: 'center',
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     width: '100%',
-    padding: 20,
-    backgroundColor: '#E71111',
+    padding: 19,
+    backgroundColor: '#ff2c2c',
   },
   wrapInput: {
     position: 'absolute',

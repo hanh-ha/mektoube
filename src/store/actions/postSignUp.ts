@@ -15,3 +15,9 @@ export const postSignUpSuccess = (token, puk) => {
     puk,
   };
 };
+export const postSignUpFail = value => {
+  return {
+    type: POST_SIGN_UP_FALSE,
+    value,
+  };
+};

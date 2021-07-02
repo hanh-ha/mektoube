@@ -6,25 +6,22 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon3 from 'react-native-vector-icons/AntDesign';
 import {StackActions} from '@react-navigation/native';
 
-const SignUpForm = ({title, iconName, subMit, navigation}) => {
+const SignUpForm = ({title, iconName, subMit, navigation, subTitle}) => {
   return (
     <View>
       <LinearGradient colors={['#FF59F4', '#FF5978']} style={styles.background}>
         <View style={styles.wrapper}>
           <TouchableOpacity
-            onPress={() => navigation.dispatch(StackActions.pop(1))}>
-            <Icon1
-              name="chevron-back-outline"
-              size={30}
-              color="white"
-              style={styles.icon}
-            />
+            onPress={() => navigation.dispatch(StackActions.pop(1))}
+            style={styles.icon}>
+            <Icon1 name="md-chevron-back" size={22} color="white" />
           </TouchableOpacity>
           <View style={styles.header}>
             <View style={styles.headerIcon}>
               <Icon name={iconName} size={20} color="white" />
             </View>
             <Text style={styles.headerText}>{title}</Text>
+            {subTitle ? <Text style={styles.subTitle}>{subTitle}</Text> : null}
           </View>
         </View>
 
@@ -46,6 +43,7 @@ const styles = StyleSheet.create({
   background: {
     width: '100%',
     height: '100%',
+    resizeMode: 'cover',
   },
   wrapper: {
     flex: 1,
@@ -53,7 +51,9 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
   },
   icon: {
-    alignSelf: 'flex-start',
+    position: 'absolute',
+    top: 30,
+    left: 30,
   },
   header: {
     alignSelf: 'center',
@@ -73,8 +73,9 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 23,
     fontFamily: 'AvenirNextCondensed-DemiBold',
+    textAlign: 'center',
   },
   submit: {
     backgroundColor: '#ffabbd',
@@ -87,5 +88,11 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     alignSelf: 'center',
     marginBottom: 20,
+  },
+  subTitle: {
+    fontFamily: 'AvenirNextCondensed-DemiBold',
+    color: 'white',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });
