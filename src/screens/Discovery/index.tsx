@@ -129,12 +129,14 @@ const Discovery = () => {
           <View style={styles.thumbnail}>
             <TouchableOpacity>
               {item.thumbnail === null ? (
-                <Images
-                  source={{
-                    uri: 'data:image/svg+xml;utf8,' + mySVGImage,
-                  }}
-                  style={styles.imageUser}
-                />
+                <View style={{backgroundColor: '#e1f5fc', borderRadius: 10}}>
+                  <Images
+                    source={{
+                      uri: 'data:image/svg+xml;utf8,' + mySVGImage,
+                    }}
+                    style={styles.imageUser}
+                  />
+                </View>
               ) : (
                 <Image
                   source={{
