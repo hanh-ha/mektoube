@@ -9,6 +9,9 @@ import {getCountry, addCountry} from '../../store/actions/getCountry';
 import {IApplicationState} from '../../store/reducers/state';
 
 const CountryForm = ({navigation}) => {
+  setTimeout(function () {
+    console.log('hanh');
+  }, 2000);
   const [value, setValue]: any = React.useState();
   const [err, setErr]: any = useState();
 
@@ -22,12 +25,13 @@ const CountryForm = ({navigation}) => {
         ? (dispatch(addCountry(value.id)), navigation.navigate('ZipcodeForm'))
         : (dispatch(addCountry(value.id)), navigation.navigate('RegionForm'));
     } else {
-      setErr(<Text style={styles.styleErr}>Le champ est vide</Text>);
-      setTimeout(function () {
-        setErr(null);
-      }, 2000);
+      setErr(<Text style={styles.styleErr}>Le champ est vide</Text>) &&
+        setTimeout(function () {
+          setErr('null');
+        }, 2000);
     }
   };
+
   useEffect(() => {
     dispatch(getCountry());
   }, [dispatch]);

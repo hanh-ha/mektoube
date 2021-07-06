@@ -15,7 +15,7 @@ import IconEye from 'react-native-vector-icons/Feather';
 import IconCheck from 'react-native-vector-icons/Feather';
 
 const SignUpForm = ({navigation}) => {
-  const {control, handleSubmit, errors} = useForm();
+  const {control, handleSubmit, errors, clearErrors} = useForm();
   const dispatch = useDispatch();
   const [err, setErr]: any = useState(null);
   const [errPassword, setErrpassword] = useState(null);
@@ -26,6 +26,7 @@ const SignUpForm = ({navigation}) => {
   const loadingSignup = useSelector(
     (state: IApplicationState) => state.postSignUp.loading,
   );
+
   const onSubmit = values => {
     setPassword(values.password);
     const emailRegex =
@@ -44,9 +45,6 @@ const SignUpForm = ({navigation}) => {
     } else {
       setErrpassword(null);
     }
-    setTimeout(function () {
-      setErr(null);
-    }, 2000);
     if (
       checked2 &&
       checked1 &&
@@ -58,6 +56,9 @@ const SignUpForm = ({navigation}) => {
       setErr('');
       dispatch(postSignUp({...StateSignUp, ...values}));
     }
+    setTimeout(function () {
+      setErr(null);
+    }, 2000);
   };
 
   const validatePassword = JSON.stringify(
@@ -155,10 +156,13 @@ const SignUpForm = ({navigation}) => {
             as={InputText}
             name="email"
             label="Email"
-            error={!!errors.email}
+            error={errors.email}
             control={control}
             defaultValue=""
             rules={{required: true}}
+            onChangeCallback={() => {
+              setErr(null);
+            }}
           />
           {errors.email ? (
             <Text style={styles.err}>L'E-Mail ne peut pas être vide</Text>
@@ -167,10 +171,13 @@ const SignUpForm = ({navigation}) => {
             as={InputText}
             name="firstname"
             label="Prénom"
-            error={!!errors.firstname}
+            error={errors.firstname}
             control={control}
             defaultValue=""
             rules={{required: true}}
+            onChangeCallback={() => {
+              setErr(null);
+            }}
           />
           {errors.firstname ? (
             <Text style={styles.err}>Le Prénom ne peut pas être vide</Text>
@@ -186,6 +193,7 @@ const SignUpForm = ({navigation}) => {
               rules={{required: true}}
               secureTextEntry={securityPassword}
               onChangeCallback={value => {
+                clearErrors('password');
                 setPassword(value);
                 onChange(value);
               }}

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
 import {TextInput} from 'react-native-paper';
 import {StyleSheet} from 'react-native';
+import {useForm} from 'react-hook-form';
 
 interface IProps {
   error?: boolean;
@@ -13,7 +14,6 @@ interface IProps {
   secureTextEntry?: boolean;
   LinkInput?: any;
   onChangeCallback?: (val?: string) => void;
-  textInputReference?: any;
 }
 export function InputText(props: IProps) {
   const {
@@ -25,8 +25,19 @@ export function InputText(props: IProps) {
     secureTextEntry = false,
     LinkInput = {},
     onChangeCallback,
-    textInputReference,
   } = props;
+  const {clearErrors} = useForm();
+  const textInputReference = useRef(null);
+  useEffect(() => {
+    const focusTextinput = () => {
+      if (textInputReference.current.isFocused()) {
+        clearErrors('firstname');
+      }
+    };
+    return () => {
+      focusTextinput();
+    };
+  }, [clearErrors]);
 
   return (
     <TextInput

@@ -6,7 +6,7 @@ import {
 import {put, takeLatest} from 'redux-saga/effects';
 import AsyncStorage from '@react-native-community/async-storage';
 import requests from '../requests';
-import {LOG_OUT} from '../type';
+// import {LOG_OUT} from '../type';
 
 function* postSignUp(action) {
   try {
@@ -33,7 +33,7 @@ function* postSignUp(action) {
       );
       // const getToken = yield AsyncStorage.getItem('AccessToken');
       // const getPuk = yield AsyncStorage.getItem('AccessPuk');
-      yield put({type: LOG_OUT, value: token});
+      //   yield put({type: LOG_OUT, value: token});
     } else {
       yield put({type: POST_SIGN_UP_FALSE, value: false});
     }

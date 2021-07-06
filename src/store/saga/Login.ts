@@ -1,4 +1,4 @@
-import {LOGIN, LOGIN_SUCCESS, LOGIN_FALSE, LOG_OUT} from '../type';
+import {LOGIN, LOGIN_SUCCESS, LOGIN_FALSE} from '../type';
 import {race, put, takeLatest, delay} from 'redux-saga/effects';
 import AsyncStorage from '@react-native-community/async-storage';
 import requests from '../requests';
@@ -31,7 +31,7 @@ function* postLogin(action) {
           console.log('ERROR saveTokenToStore: ', err);
         },
       );
-      yield put({type: LOG_OUT, value: token});
+      //   yield put({type: LOG_OUT, value: token});
       yield put({type: LOGIN_FALSE, value: false});
     } else {
       yield put({type: LOGIN_FALSE, value: true});

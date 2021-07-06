@@ -1,9 +1,0 @@
-{
-    "blogposts":[
-        {
-            "id":1,
-            "title":"API post",
-            "content":"abc"
-        }
-    ]
-}
