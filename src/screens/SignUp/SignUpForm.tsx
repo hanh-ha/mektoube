@@ -45,6 +45,9 @@ const SignUpForm = ({navigation}) => {
     } else {
       setErrpassword(null);
     }
+    setTimeout(function () {
+      setErr(null);
+    }, 2000);
     if (
       checked2 &&
       checked1 &&
@@ -56,9 +59,6 @@ const SignUpForm = ({navigation}) => {
       setErr('');
       dispatch(postSignUp({...StateSignUp, ...values}));
     }
-    setTimeout(function () {
-      setErr(null);
-    }, 2000);
   };
 
   const validatePassword = JSON.stringify(
