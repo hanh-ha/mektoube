@@ -15,7 +15,7 @@ import {getUser, getUserPlaceholder} from '../../store/actions/getUser';
 import {useDispatch, useSelector} from 'react-redux';
 import IconMap from 'react-native-vector-icons/FontAwesome';
 import {IApplicationState} from '../../store/reducers/state';
-import {Placeholder, PlaceholderLine} from 'rn-placeholder';
+import {Placeholder, PlaceholderLine, Fade} from 'rn-placeholder';
 import IconReload from 'react-native-vector-icons/AntDesign';
 import Images from 'react-native-remote-svg';
 
@@ -23,23 +23,29 @@ const Discovery = () => {
   const [page, setPage]: any = useState(1);
   const [listUser, setListUser] = useState([]);
   const [isScroll, setIsScroll] = useState(false);
-  const handleLoadMore = () => {
-    setPage(page + 1);
-  };
+
   const dispatch = useDispatch();
 
+  const handleLoadMore = () => {
+    if (page < 76) {
+      setPage(page + 1);
+    }
+  };
+
   useEffect(() => {
-    dispatch(getUserPlaceholder(true));
-    dispatch(getUser((page - 1) * 20));
+    try {
+      dispatch(getUserPlaceholder(true));
+      dispatch(getUser((page - 1) * 20));
+    } catch (e) {}
   }, [dispatch, page]);
 
-  const getUserSelector = useSelector(
-    (state: IApplicationState) => state.getUsers.data,
-  );
-  console.log(getUserSelector);
   const getIsDataFetched = useSelector(
     (state: IApplicationState) => state.getUsers.isDataFetched,
   );
+  const getUserSelector = useSelector(
+    (state: IApplicationState) => state.getUsers.data,
+  );
+
   useEffect(() => {
     const getUserList = () => {
       try {
@@ -67,7 +73,7 @@ const Discovery = () => {
       try {
         setListUser([]);
         await dispatch(getUserPlaceholder(true));
-        dispatch(getUser((page - 1) * 20));
+        setPage(1);
       } catch (e) {}
     };
     isRefresh();
@@ -179,23 +185,7 @@ const Discovery = () => {
           <View style={styles.main}>
             <View style={styles.userList}>
               {isScroll ? (
-                <View
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    height: 50,
-                    width: '100%',
-                    backgroundColor: '#fff',
-                    shadowColor: '#000',
-                    shadowOffset: {width: 1, height: 1},
-                    shadowOpacity: 0.4,
-                    shadowRadius: 3,
-                    elevation: 5,
-                    justifyContent: 'center',
-                    paddingHorizontal: 20,
-                    zIndex: 90,
-                  }}>
+                <View style={styles.reset}>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -228,6 +218,7 @@ const Discovery = () => {
                 onEndReached={handleLoadMore}
                 showsHorizontalScrollIndicator={false}
                 renderItem={renderItem}
+                onEndReachedThreshold={0}
                 ListHeaderComponent={() => {
                   return (
                     <View>
@@ -277,20 +268,16 @@ const Discovery = () => {
                         style={{
                           marginBottom: 20,
                           marginTop: 10,
-                          paddingHorizontal: 20,
-                        }}>
+                        }}
+                        Animation={Fade}>
                         <View
                           style={{
                             flexDirection: 'row',
                             justifyContent: 'space-between',
                             marginBottom: 20,
                           }}>
-                          <PlaceholderLine
-                            style={{width: 155, height: 150, borderRadius: 10}}
-                          />
-                          <PlaceholderLine
-                            style={{width: 155, height: 150, borderRadius: 10}}
-                          />
+                          <PlaceholderLine style={styles.playholderLeft} />
+                          <PlaceholderLine style={styles.playholderRight} />
                         </View>
                         <View
                           style={{
@@ -298,12 +285,8 @@ const Discovery = () => {
                             justifyContent: 'space-between',
                             marginBottom: 20,
                           }}>
-                          <PlaceholderLine
-                            style={{width: 155, height: 150, borderRadius: 10}}
-                          />
-                          <PlaceholderLine
-                            style={{width: 155, height: 150, borderRadius: 10}}
-                          />
+                          <PlaceholderLine style={styles.playholderLeft} />
+                          <PlaceholderLine style={styles.playholderRight} />
                         </View>
                         <View
                           style={{
@@ -311,12 +294,8 @@ const Discovery = () => {
                             justifyContent: 'space-between',
                             marginBottom: 20,
                           }}>
-                          <PlaceholderLine
-                            style={{width: 155, height: 150, borderRadius: 10}}
-                          />
-                          <PlaceholderLine
-                            style={{width: 155, height: 150, borderRadius: 10}}
-                          />
+                          <PlaceholderLine style={styles.playholderLeft} />
+                          <PlaceholderLine style={styles.playholderRight} />
                         </View>
                       </Placeholder>
                     );
@@ -341,6 +320,36 @@ const Discovery = () => {
 };
 export default Discovery;
 const styles = StyleSheet.create({
+  reset: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: 50,
+    width: '100%',
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 5,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    zIndex: 90,
+  },
+  playholderLeft: {
+    width: '42%',
+    height: 150,
+    borderRadius: 10,
+    marginLeft: '5%',
+    marginRight: '3%',
+  },
+  playholderRight: {
+    width: '42%',
+    height: 150,
+    borderRadius: 10,
+    marginLeft: '3%',
+    marginRight: '5%',
+  },
   borderGray: {
     borderBottomColor: '#DCDCDC',
     borderBottomWidth: 1,

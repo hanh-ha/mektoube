@@ -5,11 +5,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getZipCodeCity} from '../../store/actions/getZipCodeCity';
 import {IApplicationState} from '../../store/reducers/state';
 
-const EntityForm = ({navigation}) => {
+const ZipcodeForm = ({navigation}) => {
   const [value, onChange] = useState();
   const dispatch = useDispatch();
   const getCountry = useSelector(
-    (state: IApplicationState) => state.signUp?.country,
+    (state: IApplicationState) => state.Country?.country,
   );
   const [err, setErr]: any = useState(null);
   const chekcZipCode = useSelector(
@@ -47,7 +47,7 @@ const EntityForm = ({navigation}) => {
   );
 };
 
-export default EntityForm;
+export default ZipcodeForm;
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,

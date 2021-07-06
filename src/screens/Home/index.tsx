@@ -44,6 +44,7 @@ const Home = ({navigation}) => {
   const loadingLogin = useSelector(
     (state: IApplicationState) => state?.signIn?.loading,
   );
+
   return (
     <View style={style.container}>
       <ImageBackground

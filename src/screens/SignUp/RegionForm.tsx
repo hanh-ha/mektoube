@@ -5,7 +5,7 @@ import RadioBox from '../../components/radioBox';
 import {RadioButton} from 'react-native-paper';
 import {useSelector, useDispatch} from 'react-redux';
 import {getRegion} from '../../store/actions/getRegion';
-import {Region} from '../../store/actions/signUp';
+import {addRegionSuccess} from '../../store/actions/getRegion';
 import {IApplicationState} from '../../store/reducers/state';
 
 const RegionForm = ({navigation}) => {
@@ -13,14 +13,14 @@ const RegionForm = ({navigation}) => {
   const dispatch = useDispatch();
   const [value, setValue]: any = React.useState();
   const countryState = useSelector(
-    (state: IApplicationState) => state.signUp?.country,
+    (state: IApplicationState) => state.Country?.country,
   );
   const onChange = newValue => {
     setValue(newValue);
   };
   const onSubMit = () => {
     value
-      ? (dispatch(Region(value)), navigation.navigate('CityForm'))
+      ? (dispatch(addRegionSuccess(value)), navigation.navigate('CityForm'))
       : (setErr(<Text style={styles.styleErr}>Le champ est vide</Text>),
         setTimeout(function () {
           setErr(null);

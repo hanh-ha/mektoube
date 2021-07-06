@@ -13,10 +13,17 @@ const CityForm = ({navigation}) => {
 
   const dispatch = useDispatch();
   const [value, setValue]: any = React.useState();
-  const getSignup = useSelector((state: IApplicationState) => state.signUp);
+  const getCountry = useSelector(
+    (state: IApplicationState) => state.Country?.country,
+  );
+  const getRegion = useSelector(
+    (state: IApplicationState) => state.Region?.region,
+  );
+
   useEffect(() => {
-    dispatch(getCity(getSignup.country, getSignup.Region));
-  }, [getSignup.country, dispatch, getSignup.Region]);
+    dispatch(getCity(getCountry, getRegion));
+  }, [getCountry, dispatch, getRegion]);
+
   const getDataCity = useSelector(
     (state: IApplicationState) => state.City.data.data?.CONTENT.ALL.cities,
   );

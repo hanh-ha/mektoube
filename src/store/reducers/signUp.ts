@@ -3,8 +3,6 @@ import {
   ENTRYFORM,
   BIRTHDAY_FORM,
   ORIGIN_FORM,
-  COUNTRY_FORM,
-  REGION_FORM,
   CITY_FORM,
 } from '../actions/signUp';
 
@@ -12,8 +10,6 @@ const initState = {
   gender: '',
   birthday: '',
   origin: '',
-  country: '',
-  Region: '',
   geoname_id: '',
   firstname: '',
   email: '',
@@ -42,18 +38,6 @@ export const entyFormReducer: Reducer = (
       return {
         ...state,
         origin: action.value,
-      };
-    }
-    case COUNTRY_FORM: {
-      return {
-        ...state,
-        country: action.value,
-      };
-    }
-    case REGION_FORM: {
-      return {
-        ...state,
-        Region: action.value,
       };
     }
     case CITY_FORM: {

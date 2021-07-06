@@ -1,7 +1,12 @@
 import {AnyAction, Reducer} from 'redux';
-import {GET_COUNTRY, GET_COUNTRY_SUCCESS} from '../actions/getCountry';
+import {
+  GET_COUNTRY,
+  GET_COUNTRY_SUCCESS,
+  COUNTRY_FORM,
+} from '../actions/getCountry';
 const InitState = {
   data: '',
+  country: '',
 };
 export const getCountryReducer: Reducer = (
   state = InitState,
@@ -17,6 +22,12 @@ export const getCountryReducer: Reducer = (
       return {
         ...state,
         data: action.data,
+      };
+    }
+    case COUNTRY_FORM: {
+      return {
+        ...state,
+        country: action.value,
       };
     }
     default:

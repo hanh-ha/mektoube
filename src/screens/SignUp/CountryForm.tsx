@@ -4,8 +4,8 @@ import {View, FlatList, StyleSheet, Text} from 'react-native';
 import RadioBox from '../../components/radioBox';
 import {RadioButton} from 'react-native-paper';
 import {useSelector, useDispatch} from 'react-redux';
-import {getCountry} from '../../store/actions/getCountry';
-import {Country} from '../../store/actions/signUp';
+import {getCountry, addCountry} from '../../store/actions/getCountry';
+// import {Country} from '../../store/actions/signUp';
 import {IApplicationState} from '../../store/reducers/state';
 
 const CountryForm = ({navigation}) => {
@@ -19,8 +19,8 @@ const CountryForm = ({navigation}) => {
   const onSubMit = () => {
     if (value) {
       value.zipFormat && value.zipRegex
-        ? (dispatch(Country(value.id)), navigation.navigate('ZipcodeForm'))
-        : (dispatch(Country(value.id)), navigation.navigate('RegionForm'));
+        ? (dispatch(addCountry(value.id)), navigation.navigate('ZipcodeForm'))
+        : (dispatch(addCountry(value.id)), navigation.navigate('RegionForm'));
     } else {
       setErr(<Text style={styles.styleErr}>Le champ est vide</Text>);
       setTimeout(function () {

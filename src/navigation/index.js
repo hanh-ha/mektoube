@@ -166,7 +166,7 @@ const RootNavigation = () => {
       } catch (e) {}
     }
     getToken();
-  }, [tokenLogin, tokenSignUp, tokenLogout]);
+  }, [tokenLogin, tokenSignUp]);
 
   return (
     <NavigationContainer initialRouteName="Home">

@@ -90,8 +90,8 @@ export const InputSignIn = (props: IProps) => {
           },
           fonts: {
             regular: {
-              fontFamily: 'AvenirNextCondensed',
-              fontWeight: 'normal',
+              fontFamily: 'AvenirNextCondensed-Medium',
+              fontWeight: '700',
             },
           },
         }}
@@ -124,6 +124,6 @@ const styles = StyleSheet.create({
     height: 70,
     overflow: 'hidden',
     backgroundColor: '#fff',
-    fontFamily: 'AvenirNextCondensed',
+    fontFamily: 'AvenirNextCondensed-Medium',
   },
 });
