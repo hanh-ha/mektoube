@@ -14,7 +14,7 @@ function* postSignUp(action) {
       '/pool/.json?new_key_signup=true',
       action.value,
     );
-    if (responseSignUp) {
+    if (responseSignUp?.data?.CONTENT?.AUTH?.puk) {
       const puk = responseSignUp?.data?.CONTENT?.AUTH?.puk;
       const token = responseSignUp?.data?.CONTENT?.AUTH?.token;
       yield put({
@@ -38,7 +38,6 @@ function* postSignUp(action) {
       yield put({type: POST_SIGN_UP_FALSE, value: false});
     }
   } catch (e) {
-    console.log('e', e);
     yield put({type: POST_SIGN_UP_FALSE, value: false});
   }
 }

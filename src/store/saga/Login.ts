@@ -14,7 +14,7 @@ function* postLogin(action) {
       posts: response,
       timeout: delay(7000),
     });
-    if (posts) {
+    if (posts.data.CONTENT.token) {
       yield put({
         type: LOGIN_SUCCESS,
         token: posts.data.CONTENT.token,

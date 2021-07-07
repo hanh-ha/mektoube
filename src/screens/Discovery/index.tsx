@@ -23,6 +23,7 @@ const Discovery = () => {
   const [page, setPage]: any = useState(1);
   const [listUser, setListUser] = useState([]);
   const [isScroll, setIsScroll] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -34,14 +35,16 @@ const Discovery = () => {
 
   useEffect(() => {
     try {
+      setRefreshing(false);
       dispatch(getUserPlaceholder(true));
       dispatch(getUser((page - 1) * 20));
     } catch (e) {}
-  }, [dispatch, page]);
+  }, [dispatch, page, refreshing]);
 
   const getIsDataFetched = useSelector(
     (state: IApplicationState) => state.getUsers.isDataFetched,
   );
+  console.log('getIsDataFetched', getIsDataFetched);
   const getUserSelector = useSelector(
     (state: IApplicationState) => state.getUsers.data,
   );
@@ -56,6 +59,11 @@ const Discovery = () => {
     };
     getUserList();
   }, [dispatch, getUserSelector]);
+  useEffect(() => {
+    if (page === 1) {
+      dispatch(getUserPlaceholder(true));
+    }
+  }, [dispatch, page]);
 
   const getOnlineStatusColor = (status: number) => {
     if (Number(status) === 1) {
@@ -65,27 +73,18 @@ const Discovery = () => {
     }
   };
 
-  const [refreshing, setRefreshing] = useState(false);
-
   const onRefreshs = () => {
     setRefreshing(true);
-    const isRefresh = async () => {
-      try {
-        setListUser([]);
-        await dispatch(getUserPlaceholder(true));
-        setPage(1);
-      } catch (e) {}
-    };
-    isRefresh();
-    setRefreshing(false);
+    setListUser([]);
+    setPage(1);
   };
-
+  console.log('page', page);
   const handleScroll = e => {
     const scrollTop = e.nativeEvent.contentOffset.y;
     if (scrollTop > 100) {
-      setIsScroll(true);
+      !isScroll && setIsScroll(true);
     } else {
-      setIsScroll(false);
+      isScroll && setIsScroll(false);
     }
   };
   const mySVGImage =

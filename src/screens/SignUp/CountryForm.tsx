@@ -9,9 +9,6 @@ import {getCountry, addCountry} from '../../store/actions/getCountry';
 import {IApplicationState} from '../../store/reducers/state';
 
 const CountryForm = ({navigation}) => {
-  setTimeout(function () {
-    console.log('hanh');
-  }, 2000);
   const [value, setValue]: any = React.useState();
   const [err, setErr]: any = useState();
 

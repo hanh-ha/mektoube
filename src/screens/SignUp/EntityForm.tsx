@@ -10,9 +10,7 @@ const EntityForm = ({navigation}) => {
   const dispatch = useDispatch();
   const [value, newValues]: any = React.useState();
   const [err, setErr]: any = useState();
-  setTimeout(function () {
-    console.log('hanh');
-  }, 2000);
+
   const onChange = newValue => {
     newValues(newValue);
   };
